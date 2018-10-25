@@ -24,7 +24,9 @@ set(SRCS
 set(PUBLIC_HEADERS
 	includes/lalbd.hpp
 	includes/Loader/Loader.hpp
-	includes/Datastore/Datastore.hpp)
+	includes/Datastore/Datastore.hpp
+	includes/DataRepresentation/DataRepresentation.hpp
+	inclides/DataRepresentation/DataRepresentation.tpp)
 
 
 add_library(${SHARED_NAME} SHARED ${SRCS})
