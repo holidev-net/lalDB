@@ -83,12 +83,12 @@ const T	&DataRepresentation::getData() const
 }
 
 template<typename T>
-auto	DataRepresentation::value() {
+auto	&DataRepresentation::value() {
 	return (static_cast<T*>(_data.get()))->get();
 }
 
 template<typename T>
-auto	DataRepresentation::value() const {
+const auto	&DataRepresentation::value() const {
 	return (static_cast<T*>(_data.get()))->get();
 }
 
@@ -139,32 +139,32 @@ DataRepresentation	DataRepresentation::clone(CloneOption attr) const
 	return DataRepresentation(copiedData);
 }
 
-bool	DataRepresentation::isObject(void)
+bool	DataRepresentation::isObject(void) const
 {
 	return (_data->getType() == OBJ);
 }
 
-bool	DataRepresentation::isArray(void)
+bool	DataRepresentation::isArray(void) const
 {
 	return (_data->getType() == ARR);
 }
 
-bool	DataRepresentation::isNumber(void)
+bool	DataRepresentation::isNumber(void) const
 {
 	return (_data->getType() == NBR);
 }
 
-bool	DataRepresentation::isString(void)
+bool	DataRepresentation::isString(void) const
 {
 	return (_data->getType() == STR);
 }
 
-bool	DataRepresentation::isBool(void)
+bool	DataRepresentation::isBool(void) const
 {
 	return (_data->getType() == BOL);
 }
 
-bool	DataRepresentation::isNull(void)
+bool	DataRepresentation::isNull(void) const
 {
 	return (_data->getType() == NUL);
 }

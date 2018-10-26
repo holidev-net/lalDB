@@ -60,12 +60,12 @@ public:
 	
 	DataRepresentation	clone(CloneOption attr = CloneOption::DEEP) const;
 
-	bool	isObject(void);
-	bool	isArray(void);
-	bool	isNumber(void);
-	bool	isString(void);
-	bool	isBool(void);
-	bool	isNull(void);
+	bool	isObject(void) const;
+	bool	isArray(void) const;
+	bool	isNumber(void) const;
+	bool	isString(void) const;
+	bool	isBool(void) const;
+	bool	isNull(void) const;
 	
 	template<typename T>
 	T	&getData();
@@ -74,10 +74,10 @@ public:
 	const T	&getData() const;
 
 	template<typename T>
-	auto	value();
+	auto	&value();
 
 	template<typename T>
-	auto	value() const;
+	const auto	&value() const;
 
 	static inline DataRepresentation	newObject()
 	{
