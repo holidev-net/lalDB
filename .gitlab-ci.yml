@@ -1,0 +1,12 @@
+image: epitechcontent/epitest-docker
+
+build:
+  stage: build
+  script: 
+    - ./compile-release.sh
+  artifacts:
+    paths:
+      - ./build-*/bin
+  cache:
+    paths:
+      - "*.o"
