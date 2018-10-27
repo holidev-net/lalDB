@@ -38,46 +38,52 @@ public:
 		NUL
 	};
 public:
-	DataRepresentation(DataRepresentation const &) = default;
-	DataRepresentation(Type type = NUL);
-	DataRepresentation(double nbr);
-	DataRepresentation(long nbr);
-	DataRepresentation(int nbr);
-	DataRepresentation(bool bol);
-	DataRepresentation(std::string const &str);
-	DataRepresentation(const char *s);
-	DataRepresentation(const char *s, std::size_t l);
-	DataRepresentation(std::initializer_list<DataRepresentation> list);
-	DataRepresentation(std::initializer_list<ObjEntry> list);
+	inline DataRepresentation(DataRepresentation const &) = default;
+	inline DataRepresentation(Type type = NUL);
+	inline DataRepresentation(double nbr);
+	inline DataRepresentation(long nbr);
+	inline DataRepresentation(int nbr);
+	inline DataRepresentation(bool bol);
+	inline DataRepresentation(std::string const &str);
+	inline DataRepresentation(const char *s);
+	inline DataRepresentation(const char *s, std::size_t l);
+	inline DataRepresentation(std::initializer_list<DataRepresentation> list);
+	inline DataRepresentation(std::initializer_list<ObjEntry> list);
 
-	DataRepresentation	&operator=(DataRepresentation const &other) = default;
-	bool	operator==(DataRepresentation const &other) const;
-	bool	operator!=(DataRepresentation const &other) const;
+	inline DataRepresentation	&operator=(DataRepresentation const &other) = default;
+	inline bool			operator==(DataRepresentation const &other) const;
+	inline bool			operator!=(DataRepresentation const &other) const;
 
-	DataRepresentation	&operator[](std::string const &key);
-	DataRepresentation	&operator[](unsigned idx);
-	DataRepresentation	&push(DataRepresentation const &obj);
+	inline DataRepresentation	&operator[](std::string const &key);
+	inline DataRepresentation	&operator[](unsigned idx);
+	inline DataRepresentation	&push(DataRepresentation const &obj);
 	
-	DataRepresentation	clone(CloneOption attr = CloneOption::DEEP) const;
+	inline DataRepresentation	clone(CloneOption attr = CloneOption::DEEP) const;
 
-	bool	isObject(void);
-	bool	isArray(void);
-	bool	isNumber(void);
-	bool	isString(void);
-	bool	isBool(void);
-	bool	isNull(void);
+	inline bool	isObject(void) const;
+	inline bool	isArray(void) const;
+	inline bool	isNumber(void) const;
+	inline bool	isString(void) const;
+	inline bool	isBool(void) const;
+	inline bool	isNull(void) const;
 	
 	template<typename T>
-	T	&getData();
+	inline T	&getData();
 
 	template<typename T>
-	const T	&getData() const;
+	inline const T	&getData() const;
 
 	template<typename T>
-	auto	value();
+	inline auto	&value();
 
 	template<typename T>
-	auto	value() const;
+	inline const auto	&value() const;
+
+	template<typename T, typename U>
+	inline U	value();
+
+	template<typename T, typename U>
+	inline U	value() const;
 
 	static inline DataRepresentation	newObject()
 	{
@@ -89,11 +95,11 @@ public:
 		return DataRepresentation(ARR);
 	}
 private:
-	DataRepresentation(std::shared_ptr<laldb::AbstractData> &data);
+	inline DataRepresentation(std::shared_ptr<laldb::AbstractData> &data);
 private:
 	std::shared_ptr<AbstractData>	_data;
 };
-std::ostream	&operator<<(std::ostream &to, DataRepresentation const &me);
+inline std::ostream	&operator<<(std::ostream &to, DataRepresentation const &me);
 
 
 class AbstractData
@@ -108,14 +114,14 @@ public:
 class Number final : public AbstractData
 {
 public:
-	Number(double nbr);
+	inline Number(double nbr);
 	
-	virtual bool		operator==(AbstractData const &) const final;
-	virtual DataRepresentation::Type	getType() const final;
-	virtual std::shared_ptr<AbstractData>
+	inline virtual bool		operator==(AbstractData const &) const final;
+	inline virtual DataRepresentation::Type	getType() const final;
+	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
-	double	get(void) const;
-	void	set(double val);
+	inline double	get(void) const;
+	inline void	set(double val);
 private:
 	double	_value;
 };
@@ -123,16 +129,16 @@ private:
 class Buffer final : public AbstractData
 {
 public:
-	Buffer();
-	Buffer(void const *s, std::size_t len);
+	inline Buffer();
+	inline Buffer(void const *s, std::size_t len);
 
-	virtual bool		operator==(AbstractData const &) const final;
-	virtual DataRepresentation::Type	getType() const final;
-	virtual std::shared_ptr<AbstractData>
+	inline virtual bool		operator==(AbstractData const &) const final;
+	inline virtual DataRepresentation::Type	getType() const final;
+	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
-	void		*get(void);
-	const void	*get(void) const;
-	std::size_t	size(void) const;
+	inline void		*get(void);
+	inline const void	*get(void) const;
+	inline std::size_t	size(void) const;
 private:
 	void		*_data;
 	std::size_t	_len;
@@ -141,40 +147,40 @@ private:
 class Null final : public AbstractData
 {
 public:
-	Null();
+	inline Null();
 	
-	virtual bool		operator==(AbstractData const &) const final;
-	virtual DataRepresentation::Type	getType() const final;
-	virtual std::shared_ptr<AbstractData>
+	inline virtual bool		operator==(AbstractData const &) const final;
+	inline virtual DataRepresentation::Type	getType() const final;
+	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
-	void	*get(void) const;
+	inline void	*get(void) const;
 };
 
 class String final : public AbstractData, private std::string
 {
 public:
-	String(std::string const &str);
+	inline String(std::string const &str);
 
-	virtual bool		operator==(AbstractData const &) const final;
-	virtual DataRepresentation::Type	getType() const final;
-	virtual std::shared_ptr<AbstractData>
+	inline virtual bool		operator==(AbstractData const &) const final;
+	inline virtual DataRepresentation::Type	getType() const final;
+	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
-	const std::string
+	inline const std::string
 			&get(void) const;
-	void		set(std::string const &str);
+	inline void	set(std::string const &str);
 };
 
 class Bool final : public AbstractData
 {
 public:
-	Bool(bool val);
+	inline Bool(bool val);
 	
-	virtual bool		operator==(AbstractData const &) const final;
-	virtual DataRepresentation::Type	getType() const final;
-	virtual std::shared_ptr<AbstractData>
+	inline virtual bool		operator==(AbstractData const &) const final;
+	inline virtual DataRepresentation::Type	getType() const final;
+	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
-	bool	get(void) const;
-	void	set(bool bol);
+	inline bool	get(void) const;
+	inline void	set(bool bol);
 private:
 	bool	_value;
 };
@@ -182,28 +188,28 @@ private:
 class Object final : public AbstractData, private std::unordered_map<std::string, DataRepresentation>
 {
 public:
-	Object();
-	Object(std::initializer_list<ObjEntry> list);
+	inline Object();
+	inline Object(std::initializer_list<ObjEntry> list);
 
-	virtual bool		operator==(AbstractData const &) const final;
-	virtual DataRepresentation::Type	getType() const final;
-	virtual std::shared_ptr<AbstractData>
+	inline virtual bool		operator==(AbstractData const &) const final;
+	inline virtual DataRepresentation::Type	getType() const final;
+	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
 
-	std::unordered_map<std::string, DataRepresentation> &get(void);
+	inline std::unordered_map<std::string, DataRepresentation> &get(void);
 };
 
 class Array final : public AbstractData, private std::vector<DataRepresentation>
 {
 public:
-	Array();
-	Array(std::initializer_list<ArrayEntry> list);
+	inline Array();
+	inline Array(std::initializer_list<ArrayEntry> list);
 
-	virtual bool		operator==(AbstractData const &) const final;
-	virtual DataRepresentation::Type	getType(void) const final;
-	virtual std::shared_ptr<AbstractData>
+	inline virtual bool		operator==(AbstractData const &) const final;
+	inline virtual DataRepresentation::Type	getType(void) const final;
+	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
-	std::vector<DataRepresentation>		&get(void);
+	inline std::vector<DataRepresentation>		&get(void);
 };
 
 }

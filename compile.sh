@@ -2,7 +2,7 @@
 
 BuildDir="build-$(uname)"
 
-if [ "$1" == "--get-build-directory" ]; then
+if [ "$1" = "--get-build-directory" ]; then
 	echo $BuildDir
 	exit 0
 fi
