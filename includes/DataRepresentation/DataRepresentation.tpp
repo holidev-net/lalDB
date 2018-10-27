@@ -6,8 +6,7 @@
 
 namespace laldb {
 
-DataRepresentation::DataRepresentation(Type type)
-{
+DataRepresentation::DataRepresentation(Type type) {
 	switch (type) {
 		case OBJ:
 			_data = std::make_shared<Object>();
@@ -71,14 +70,12 @@ DataRepresentation::DataRepresentation(std::shared_ptr<laldb::AbstractData> &dat
 {}
 
 template<typename T>
-T	&DataRepresentation::getData()
-{
+T	&DataRepresentation::getData() {
 	return *(static_cast<T*>(_data.get()));
 }
 
 template<typename T>
-const T	&DataRepresentation::getData() const
-{
+const T	&DataRepresentation::getData() const {
 	return *(static_cast<T*>(_data.get()));
 }
 
@@ -92,18 +89,25 @@ const auto	&DataRepresentation::value() const {
 	return (static_cast<T*>(_data.get()))->get();
 }
 
-bool	DataRepresentation::operator==(DataRepresentation const &other) const
-{
+template<typename T, typename U>
+U	DataRepresentation::value() {
+	return (static_cast<T*>(_data.get()))->get();
+}
+
+template<typename T, typename U>
+U	DataRepresentation::value() const {
+	return (static_cast<T*>(_data.get()))->get();
+}
+
+bool	DataRepresentation::operator==(DataRepresentation const &other) const {
 	return ((*_data) == other.getData<AbstractData>());
 }
 
-bool	DataRepresentation::operator!=(DataRepresentation const &other) const
-{
+bool	DataRepresentation::operator!=(DataRepresentation const &other) const {
 	return !((*_data) == other.getData<AbstractData>());
 }
 
-DataRepresentation	&DataRepresentation::operator[](std::string const &key)
-{
+DataRepresentation	&DataRepresentation::operator[](std::string const &key) {
 	if (_data == nullptr || _data->getType() != OBJ) {
 		throw std::runtime_error("laldb : Error : "
 			"Cannot use this DataRepresentation");
@@ -111,8 +115,7 @@ DataRepresentation	&DataRepresentation::operator[](std::string const &key)
 	return getData<Object>().get()[key];
 }
 
-DataRepresentation	&DataRepresentation::operator[](unsigned idx)
-{
+DataRepresentation	&DataRepresentation::operator[](unsigned idx) {
 	if (_data == nullptr || _data->getType() != ARR) {
 		throw std::runtime_error("laldb : Error : "
 			"Cannot use this DataRepresentation");
@@ -120,8 +123,7 @@ DataRepresentation	&DataRepresentation::operator[](unsigned idx)
 	return getData<Array>().get()[idx];
 }
 
-DataRepresentation	&DataRepresentation::push(DataRepresentation const &obj)
-{
+DataRepresentation	&DataRepresentation::push(DataRepresentation const &obj) {
 	if (_data == nullptr || _data->getType() != ARR) {
 		throw std::runtime_error("laldb : Error : "
 			"Cannot use this DataRepresentation");
@@ -132,40 +134,33 @@ DataRepresentation	&DataRepresentation::push(DataRepresentation const &obj)
 	return arr.back();
 }
 
-DataRepresentation	DataRepresentation::clone(CloneOption attr) const
-{
+DataRepresentation	DataRepresentation::clone(CloneOption attr) const {
 	auto	copiedData = _data->clone(attr);
 
 	return DataRepresentation(copiedData);
 }
 
-bool	DataRepresentation::isObject(void) const
-{
+bool	DataRepresentation::isObject(void) const {
 	return (_data->getType() == OBJ);
 }
 
-bool	DataRepresentation::isArray(void) const
-{
+bool	DataRepresentation::isArray(void) const {
 	return (_data->getType() == ARR);
 }
 
-bool	DataRepresentation::isNumber(void) const
-{
+bool	DataRepresentation::isNumber(void) const {
 	return (_data->getType() == NBR);
 }
 
-bool	DataRepresentation::isString(void) const
-{
+bool	DataRepresentation::isString(void) const {
 	return (_data->getType() == STR);
 }
 
-bool	DataRepresentation::isBool(void) const
-{
+bool	DataRepresentation::isBool(void) const {
 	return (_data->getType() == BOL);
 }
 
-bool	DataRepresentation::isNull(void) const
-{
+bool	DataRepresentation::isNull(void) const {
 	return (_data->getType() == NUL);
 }
 
@@ -176,30 +171,25 @@ Number::Number(double nbr) :
 	_value(nbr)
 {}
 
-bool		Number::operator==(AbstractData const &other) const
-{
+bool		Number::operator==(AbstractData const &other) const {
 	return (other.getType() == DataRepresentation::NBR &&
 		_value == static_cast<const Number&>(other).get());
 }
 
-DataRepresentation::Type	Number::getType() const
-{
+DataRepresentation::Type	Number::getType() const {
 	return DataRepresentation::NBR;
 }
 
-std::shared_ptr<AbstractData>	Number::clone(DataRepresentation::CloneOption attr) const
-{
+std::shared_ptr<AbstractData>	Number::clone(DataRepresentation::CloneOption attr) const {
 	(void) attr;
 	return std::make_shared<Number>(_value);
 }
 
-double	Number::get(void) const
-{
+double	Number::get(void) const {
 	return _value;
 }
 
-void	Number::set(double nbr)
-{
+void	Number::set(double nbr) {
 	_value = nbr;
 }
 
@@ -214,8 +204,7 @@ Buffer::Buffer(void const *buffer, std::size_t len):
 	std::memmove(_data, buffer, len);
 }
 
-bool		Buffer::operator==(AbstractData const &other) const
-{
+bool		Buffer::operator==(AbstractData const &other) const {
 	if (other.getType() == DataRepresentation::BUF) {
 		return (_len == static_cast<const Buffer&>(other).size() 
 		&& !std::memcmp(_data, static_cast<const Buffer&>(other).get(), _len));
@@ -223,28 +212,23 @@ bool		Buffer::operator==(AbstractData const &other) const
 	return false;
 }
 
-DataRepresentation::Type	Buffer::getType() const
-{
+DataRepresentation::Type	Buffer::getType() const {
 	return DataRepresentation::BUF;
 }
 
-std::shared_ptr<AbstractData>	Buffer::clone(DataRepresentation::CloneOption) const
-{
+std::shared_ptr<AbstractData>	Buffer::clone(DataRepresentation::CloneOption) const {
 	return std::make_shared<Buffer>(_data, _len);
 }
 
-void	*Buffer::get(void)
-{
+void	*Buffer::get(void) {
 	return _data;
 }
 
-const void	*Buffer::get(void) const
-{
+const void	*Buffer::get(void) const {
 	return _data;
 }
 
-std::size_t Buffer::size(void) const
-{
+std::size_t Buffer::size(void) const {
 	return _len;
 }
 
@@ -254,24 +238,20 @@ std::size_t Buffer::size(void) const
 Null::Null()
 {}
 
-DataRepresentation::Type	Null::getType() const
-{
+DataRepresentation::Type	Null::getType() const {
 	return DataRepresentation::NUL;
 }
 
-bool		Null::operator==(AbstractData const &other) const
-{
+bool		Null::operator==(AbstractData const &other) const {
 	return (other.getType() == DataRepresentation::NUL);
 }
 
-std::shared_ptr<AbstractData>	Null::clone(DataRepresentation::CloneOption attr) const
-{
+std::shared_ptr<AbstractData>	Null::clone(DataRepresentation::CloneOption attr) const {
 	(void) attr;
 	return std::make_shared<Null>();
 }
 
-void	*Null::get(void) const
-{
+void	*Null::get(void) const {
 	return nullptr;
 }
 
@@ -282,30 +262,24 @@ String::String(std::string const &str) :
 	std::string(str)
 {}
 
-DataRepresentation::Type	String::getType() const
-{
+DataRepresentation::Type	String::getType() const {
 	return DataRepresentation::STR;
 }
 
-bool		String::operator==(AbstractData const &other) const
-{
+bool		String::operator==(AbstractData const &other) const {
 	return (other.getType() == DataRepresentation::STR &&
 		*this == static_cast<const String&>(other).get());
 }
 
-std::shared_ptr<AbstractData>	String::clone(DataRepresentation::CloneOption attr) const
-{
-	(void) attr;
+std::shared_ptr<AbstractData>	String::clone(DataRepresentation::CloneOption) const {
 	return std::make_shared<String>(*this);
 }
 
-const std::string	&String::get(void) const
-{
+const std::string	&String::get(void) const {
 	return *this;
 }
 
-void		String::set(std::string const &str)
-{
+void		String::set(std::string const &str) {
 	dynamic_cast<std::string&>(*this) = str;
 }
 
@@ -316,30 +290,24 @@ Bool::Bool(bool val) :
 	_value(val)
 {}
 
-DataRepresentation::Type	Bool::getType() const
-{
+DataRepresentation::Type	Bool::getType() const {
 	return DataRepresentation::BOL;
 }
 
-bool		Bool::operator==(AbstractData const &other) const
-{
+bool		Bool::operator==(AbstractData const &other) const {
 	return (other.getType() == DataRepresentation::BOL &&
 		_value == static_cast<const Bool&>(other).get());
 }
 
-std::shared_ptr<AbstractData>	Bool::clone(DataRepresentation::CloneOption attr) const
-{
-	(void) attr;
+std::shared_ptr<AbstractData>	Bool::clone(DataRepresentation::CloneOption) const {
 	return std::make_shared<Bool>(_value);
 }
 
-bool	Bool::get(void) const
-{
+bool	Bool::get(void) const {
 	return _value;
 }
 
-void	Bool::set(bool val)
-{
+void	Bool::set(bool val) {
 	_value = val;
 }
 
@@ -354,19 +322,16 @@ Object::Object(std::initializer_list<ObjEntry> list):
 	std::unordered_map<std::string, DataRepresentation>(list)	
 {}
 
-DataRepresentation::Type	Object::getType() const
-{
+DataRepresentation::Type	Object::getType() const {
 	return DataRepresentation::OBJ;
 }
 
-bool		Object::operator==(AbstractData const &other) const
-{
+bool		Object::operator==(AbstractData const &other) const {
 	return (other.getType() == DataRepresentation::OBJ &&
 		*this == const_cast<Object&>(static_cast<const Object&>(other)).get());
 }
 
-std::shared_ptr<AbstractData>	Object::clone(DataRepresentation::CloneOption attr) const
-{
+std::shared_ptr<AbstractData>	Object::clone(DataRepresentation::CloneOption attr) const {
 	auto	newObj = std::make_shared<Object>();
 
 	for (auto &elem : *this) {
@@ -379,8 +344,7 @@ std::shared_ptr<AbstractData>	Object::clone(DataRepresentation::CloneOption attr
 	return newObj;
 }
 
-std::unordered_map<std::string, DataRepresentation>	&Object::get(void)
-{
+std::unordered_map<std::string, DataRepresentation>	&Object::get(void) {
 	return *this;
 }
 
@@ -395,19 +359,16 @@ Array::Array(std::initializer_list<DataRepresentation> list):
 	std::vector<DataRepresentation>(list)
 {}
 
-DataRepresentation::Type	Array::getType() const
-{
+DataRepresentation::Type	Array::getType() const {
 	return DataRepresentation::ARR;
 }
 
-bool		Array::operator==(AbstractData const &other) const
-{
+bool		Array::operator==(AbstractData const &other) const {
 	return (other.getType() == DataRepresentation::ARR &&
 		*this == const_cast<Array&>(static_cast<const Array&>(other)).get());
 }
 
-std::shared_ptr<AbstractData>	Array::clone(DataRepresentation::CloneOption attr) const
-{
+std::shared_ptr<AbstractData>	Array::clone(DataRepresentation::CloneOption attr) const {
 	auto	newArr = std::make_shared<Array>();
 
 	for (auto &elem : *this) {
@@ -420,10 +381,10 @@ std::shared_ptr<AbstractData>	Array::clone(DataRepresentation::CloneOption attr)
 	return newArr;
 }
 
-std::vector<DataRepresentation>	&Array::get(void)
-{
+std::vector<DataRepresentation>	&Array::get(void) {
 	return *this;
 }
+
 }
 
 

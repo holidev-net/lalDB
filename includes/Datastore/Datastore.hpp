@@ -11,7 +11,7 @@ class Datastore {
 private:
 	std::list<DataRepresentation>	_datas;
 public:
-	Datastore();
+	Datastore() {};
 	struct UpdateOptions {
 		bool create = true;
 		bool multi = true;

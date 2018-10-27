@@ -28,15 +28,19 @@ std::list<std::function<std::tuple<bool, std::string>()>> _fcts {
 			if (docs[0]["age"] != 16) {
 				res = false;
 				message.append("Unexpected value at [0][\"key\"]");
+			} else {
+				std::cout << "docs[0][\"age\"] == " << docs[0]["age"].value<laldb::Number, double>() << std::endl;
 			}
 		});
 
 		if (res == false)
 			return std::make_tuple(res, message);
+		return std::make_tuple(true, "");
 	}
 };
 
 class DS_Tests : public ATest {
+public:
 	DS_Tests(): ATest() {}
 
 	virtual void	launchTests() {
@@ -56,5 +60,4 @@ class DS_Tests : public ATest {
 	}
 };
 
-
-DS_Tests	__g__ds_test();
+DS_Tests __ptr;

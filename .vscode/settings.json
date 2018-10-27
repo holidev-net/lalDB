@@ -35,6 +35,10 @@
 		"tuple": "cpp",
 		"typeinfo": "cpp",
 		"utility": "cpp",
-		"new": "cpp"
+		"new": "cpp",
+		"cstddef": "cpp",
+		"cstring": "cpp",
+		"list": "cpp",
+		"iostream": "cpp"
 	}
 }
