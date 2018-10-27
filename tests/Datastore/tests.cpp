@@ -93,7 +93,7 @@ public:
 			if (!res) {
 				std::cout << "Fail: " << message << std::endl;
 			} else {
-				std::cout << "Test passed in (" << elapsed << " ns)" << std::endl;
+				std::cout << "Test passed (" << elapsed << " ns)" << std::endl;
 			}
 		}
 	}
