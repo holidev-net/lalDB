@@ -11,3 +11,10 @@ fi
 	cmake ..
 	cmake --build . $@
 ) && echo "OK" || echo "KO";
+
+( $BuildDir/laldb-tests-bin ) &&
+	echo "OK"
+	return 0
+||
+	echo "KO"
+	return 1

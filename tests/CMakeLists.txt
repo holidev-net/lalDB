@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(NAME laldb_test)
+set(NAME laldb-tests-bin)
 
 execute_process(
 	COMMAND ../../compile.sh --get-build-directory
