@@ -14,7 +14,7 @@ fi
 
 ( $BuildDir/laldb-tests-bin ) &&
 	echo "OK"
-	return 0
+	exit 0
 ||
 	echo "KO"
-	return 1
+	exit 1
