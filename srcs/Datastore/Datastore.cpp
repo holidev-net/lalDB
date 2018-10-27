@@ -41,7 +41,7 @@ std::function<void(Error error, DataRepresentation const docs)> callback) {
 
 		for (auto &qField: qMap) {
 			auto it = iMap.find(qField.first);
-			if (!(it != qMap.end() && it->second == qField.second)) {
+			if (!(it != iMap.end() && it->second == qField.second)) {
 				valid = false;
 				break;
 			}
@@ -68,7 +68,7 @@ std::function<void(Error error, DataRepresentation const doc)> callback) {
 
 		for (auto &qField: qMap) {
 			auto it = iMap.find(qField.first);
-			if (!(it != qMap.end() && it->second == qField.second)) {
+			if (!(it != iMap.end() && it->second == qField.second)) {
 				valid = false;
 				break;
 			}
@@ -98,7 +98,7 @@ std::function<void(Error error, DataRepresentation const updatedDocs)> callback)
 
 		for (auto &qField: qMap) {
 			auto it = iMap.find(qField.first);
-			if (!(it != qMap.end() && it->second == qField.second)) {
+			if (!(it != iMap.end() && it->second == qField.second)) {
 				valid = false;
 				break;
 			}
