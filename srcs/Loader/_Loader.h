@@ -16,8 +16,8 @@ extern "C" {
 
 #pragma pack(push, 4) //MSVC compatibility :$
 
-#define FILEID 0x4C4C4442
-#define MAGIC 0x42444C4C
+#define FILEID 0x4C4C4442 //0x4C4C4442 -> 'L' + 'L' + 'D' + 'B'
+#define MAGIC 0x42444C4C //0x42444C4C
 
 DECORATED_STRUCT(__Name, {
 	uint64_t	size;
@@ -25,8 +25,8 @@ DECORATED_STRUCT(__Name, {
 });
 
 DECORATED_STRUCT(LaldbFileHeader, {
-	uint32_t	id; //0x4C4C4442 -> 'L' + 'L' + 'D' + 'B'
-	uint32_t	magic;
+	uint32_t	id; // = FILEID
+	uint32_t	magic; // = MAGIC
 	uint16_t	version;
 	uint64_t	dataStoreOff;
 	uint64_t	updateOff;
