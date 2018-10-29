@@ -12,7 +12,7 @@ set(PATCH ${CMAKE_MATCH_3})
 project(${SHARED_NAME} VERSION ${VERSION} DESCRIPTION "Lite and Lazy Database -- shared build")
 project(${STATIC_NAME} VERSION ${VERSION} DESCRIPTION "Lite and Lazy Database -- static build")
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 include_directories(includes)
 include_directories(.)
