@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 
-./compile.sh --config Release
+./compile.sh Release

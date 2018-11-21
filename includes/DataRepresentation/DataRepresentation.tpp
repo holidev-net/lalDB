@@ -232,6 +232,14 @@ std::size_t Buffer::size(void) const {
 	return _len;
 }
 
+void		Buffer::set(const char *buf, std::size_t len) {
+	if (_data)
+		::operator delete(_data);
+	_data = ::operator new(len);
+	_len = len;
+	std::memmove(_data, buf, len);
+}
+
 /***********************************************
  *	NULL
 ***********************************************/
@@ -348,6 +356,10 @@ std::unordered_map<std::string, DataRepresentation>	&Object::get(void) {
 	return *this;
 }
 
+std::unordered_map<std::string, DataRepresentation>	&Object::get(void) const {
+	return *this;
+}
+
 /***********************************************
  *	Array
 ***********************************************/
@@ -382,6 +394,10 @@ std::shared_ptr<AbstractData>	Array::clone(DataRepresentation::CloneOption attr)
 }
 
 std::vector<DataRepresentation>	&Array::get(void) {
+	return *this;
+}
+
+std::vector<DataRepresentation>	&Array::get(void) const {
 	return *this;
 }
 

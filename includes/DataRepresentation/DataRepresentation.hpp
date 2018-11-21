@@ -28,7 +28,7 @@ public:
 		LAZY,
 		DEEP
 	};
-	enum Type {
+	enum Type: std::uint8_t {
 		NBR,
 		STR,
 		BUF,
@@ -120,8 +120,8 @@ public:
 	inline virtual DataRepresentation::Type	getType() const final;
 	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
-	inline double	get(void) const;
-	inline void	set(double val);
+	inline double					get(void) const;
+	inline void						set(double val);
 private:
 	double	_value;
 };
@@ -139,6 +139,7 @@ public:
 	inline void		*get(void);
 	inline const void	*get(void) const;
 	inline std::size_t	size(void) const;
+	inline void			set(const char *buf, std::size_t len);
 private:
 	void		*_data;
 	std::size_t	_len;
@@ -196,7 +197,8 @@ public:
 	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
 
-	inline std::unordered_map<std::string, DataRepresentation> &get(void);
+	inline std::unordered_map<std::string, DataRepresentation>	&get(void);
+	inline std::unordered_map<std::string, DataRepresentation>	&get(void) const;
 };
 
 class Array final : public AbstractData, private std::vector<DataRepresentation>
@@ -210,6 +212,7 @@ public:
 	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
 	inline std::vector<DataRepresentation>		&get(void);
+	inline std::vector<DataRepresentation>		&get(void) const;
 };
 
 }

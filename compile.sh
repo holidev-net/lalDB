@@ -12,6 +12,11 @@ if [ ! -d $BuildDir ]; then
 fi
 (
 	cd $BuildDir
-	cmake ..
-	cmake --build . $@
+	if [ ! -z $1 ]; then
+		cmake .. -DCMAKE_BUILD_TYPE=$@
+		cmake --build . --config $@
+	else
+		cmake .. -DCMAKE_BUILD_TYPE=Debug
+		cmake --build . --config Debug
+	fi
 ) && echo "OK" || echo "KO";

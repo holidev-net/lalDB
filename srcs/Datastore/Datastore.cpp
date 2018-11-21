@@ -89,6 +89,10 @@ std::function<void(Error error, DataRepresentation const updatedDocs)> callback)
 		callback(true, "query need to be an Object");
 		return;
 	}
+	if (newData.isObject() == false) {
+		callback(true, "new data need to be an Object");
+		return;
+	}
 	auto result = DataRepresentation::newArray();
 	const auto &qMap = query.value<::laldb::Object>();
 
@@ -114,7 +118,7 @@ std::function<void(Error error, DataRepresentation const updatedDocs)> callback)
 		result.push(query);
 	} else {
 		for (auto &i: result.value<::laldb::Array>())
-			for (auto &q: qMap)
+			for (auto &q: newData.value<::laldb::Object>())
 				i[q.first] = q.second;
 	}
 	callback(false, result);

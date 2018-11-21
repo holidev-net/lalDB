@@ -2,16 +2,10 @@
 #define _LALDB_LOADER_INTERNAL
 
 #include <stdint.h>
+#include "_internal.h"
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#ifdef _MSC_VER  // MSVC
-# define DECORATED_STRUCT(name, body) struct name body
-# pragma warning(disable : 4200)
-#else // GCC's compilers
-# define DECORATED_STRUCT(name, body) struct name body __attribute__((ms_struct))
 #endif
 
 #pragma pack(push, 4) //MSVC compatibility :$
@@ -19,7 +13,16 @@ extern "C" {
 #define FILEID 0x4C4C4442 //0x4C4C4442 -> 'L' + 'L' + 'D' + 'B'
 #define MAGIC 0x42444C4C //0x42444C4C
 
-DECORATED_STRUCT(__Name, {
+enum UpdateType {
+	ADD_DATASTORE = 0,
+	UPDATE_DATASTORE = 1,
+	RENAME_DATASTORE = 2,
+	ADD_VALUE = 3,
+	UPDATE_VALUE = 4,
+	REMOVE_VALUE = 5
+};
+
+DECORATED_STRUCT(__dyn, {
 	uint64_t	size;
 	char		data[];
 });
@@ -35,14 +38,15 @@ DECORATED_STRUCT(LaldbFileHeader, {
 DECORATED_STRUCT(LaldbDatastoreHeader, {
 	uint64_t	size;
 	uint64_t	nextOff; // == 0 if is last
-	__Name		name;
+	__dyn		name;
 	// ... Data
 });
 
 DECORATED_STRUCT(LaldbUpdateHeader, {
 	uint64_t	size;
+	UpdateType	type;
 	uint64_t	nextOff; // == 0 if is last
-	__Name		datastoreName;
+	__dyn		datastoreName;
 	// ... Data
 });
 
@@ -54,6 +58,13 @@ namespace laldb {
 	using FileHeader = LaldbFileHeader;
 	using DatastoreHeader = LaldbDatastoreHeader;
 	using UpdateHeader = LaldbUpdateHeader;
+
+	template <typename T, typename U>
+	static inline T *getData(U *ptr) {
+		auto len = (reinterpret_cast<__dyn*>(reinterpret_cast<void*>(ptr) + sizeof(U) - sizeof(__dyn)))->size;
+
+		return reinterpret_cast<T*>(reinterpret_cast<void*>(ptr) + sizeof(U) + len);
+	}
 }
 #endif
 
