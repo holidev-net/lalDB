@@ -98,6 +98,28 @@ private:
 	inline DataRepresentation(std::shared_ptr<laldb::AbstractData> &data);
 private:
 	std::shared_ptr<AbstractData>	_data;
+
+/*  ITERATOR  */
+public:
+	class iterator {
+	public:
+		inline iterator(DataRepresentation *data = nullptr, long pos = 0);
+		inline iterator(iterator const &);
+		inline ~iterator();
+		inline iterator &operator=(iterator const &);
+		inline iterator &operator++();
+		inline bool operator==(iterator const &) const;
+		inline bool operator!=(iterator const &) const;
+		inline DataRepresentation &operator*() const;
+		inline DataRepresentation *operator->() const;
+		inline friend void swap(iterator &lhs, iterator &rhs);
+	private:
+		long			_pos;
+		DataRepresentation	*_data;
+	};
+
+	inline iterator begin();
+	inline iterator end();
 };
 inline std::ostream	&operator<<(std::ostream &to, DataRepresentation const &me);
 
@@ -120,6 +142,7 @@ public:
 	inline virtual DataRepresentation::Type	getType() const final;
 	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
+	inline double	&get(void);
 	inline double	get(void) const;
 	inline void	set(double val);
 private:

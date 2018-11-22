@@ -2,6 +2,7 @@
 #define LALDB_DATAREPRESENTATION_TPP
 
 #include <cstring>
+#include <algorithm>
 #include "DataRepresentation.hpp"
 
 namespace laldb {
@@ -108,7 +109,7 @@ bool	DataRepresentation::operator!=(DataRepresentation const &other) const {
 }
 
 DataRepresentation	&DataRepresentation::operator[](std::string const &key) {
-	if (_data == nullptr || _data->getType() != OBJ) {
+	if (_data == nullptr || !isObject()) {
 		throw std::runtime_error("laldb : Error : "
 			"Cannot use this DataRepresentation");
 	}
@@ -116,7 +117,7 @@ DataRepresentation	&DataRepresentation::operator[](std::string const &key) {
 }
 
 DataRepresentation	&DataRepresentation::operator[](unsigned idx) {
-	if (_data == nullptr || _data->getType() != ARR) {
+	if (_data == nullptr || !isArray()) {
 		throw std::runtime_error("laldb : Error : "
 			"Cannot use this DataRepresentation");
 	}
@@ -124,7 +125,7 @@ DataRepresentation	&DataRepresentation::operator[](unsigned idx) {
 }
 
 DataRepresentation	&DataRepresentation::push(DataRepresentation const &obj) {
-	if (_data == nullptr || _data->getType() != ARR) {
+	if (_data == nullptr || !isArray()) {
 		throw std::runtime_error("laldb : Error : "
 			"Cannot use this DataRepresentation");
 	}
@@ -164,6 +165,97 @@ bool	DataRepresentation::isNull(void) const {
 	return (_data->getType() == NUL);
 }
 
+DataRepresentation::iterator	DataRepresentation::begin()
+{
+	if (isNull())
+		return end();
+	if (isArray() && value<Array>().empty()) {
+		return end();
+	}
+	return DataRepresentation::iterator{this};
+}
+
+DataRepresentation::iterator	DataRepresentation::end()
+{
+	return DataRepresentation::iterator{this, -1L};
+}
+
+
+/***********************************************
+ *	ITERATOR
+ ***********************************************/
+DataRepresentation::iterator::iterator(DataRepresentation *data, long pos):
+_data{data},
+_pos{pos}
+{
+	if (_data == nullptr)
+		_pos = -1;
+	else if (pos != 0 && (!data->isArray() || data->value<Array>().size() >= pos))
+		_pos = -1;
+}
+
+DataRepresentation::iterator::iterator(iterator const &it):
+_data{it._data},
+_pos{it._pos}
+{
+}
+
+DataRepresentation::iterator::~iterator()
+{
+}
+
+DataRepresentation::iterator &DataRepresentation::iterator::operator=(iterator const &it)
+{
+	_data = it._data;
+	_pos = it._pos;
+	return *this;
+}
+
+DataRepresentation::iterator &DataRepresentation::iterator::operator++()
+{
+	if (!_data->isArray() || _pos >= _data->value<Array>().size() - 1)
+		_pos = -1;
+	else
+		++_pos;
+	return (*this);
+}
+
+bool	DataRepresentation::iterator::operator==(iterator const &it) const
+{
+	return (_data == it._data && _pos == it._pos);
+}
+
+bool	DataRepresentation::iterator::operator!=(iterator const &it) const
+{
+	return (_data != it._data || _pos != it._pos);
+}
+
+DataRepresentation &DataRepresentation::iterator::operator*() const
+{
+	if (_pos == -1)
+		throw std::runtime_error("laldb : Error : "
+			"invalid iterator");
+	if (_data->isArray())
+		return (*_data)[_pos];
+	return *_data;
+}
+
+DataRepresentation *DataRepresentation::iterator::operator->() const
+{
+	if (_pos == -1)
+		throw std::runtime_error("laldb : Error : "
+			"invalid iterator");
+	if (_data->isArray())
+		return &(*_data)[_pos];
+	return _data;
+}
+
+void swap(DataRepresentation::iterator& lhs, DataRepresentation::iterator& rhs)
+{
+	std::swap(lhs._data, rhs._data);
+	std::swap(lhs._pos, rhs._pos);
+}
+
 /***********************************************
  *	NUMBER
  ***********************************************/
@@ -185,7 +277,12 @@ std::shared_ptr<AbstractData>	Number::clone(DataRepresentation::CloneOption attr
 	return std::make_shared<Number>(_value);
 }
 
-double	Number::get(void) const {
+double	&Number::get(void) {
+	return _value;
+}
+
+inline double	Number::get(void) const
+{
 	return _value;
 }
 

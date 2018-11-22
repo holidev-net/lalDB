@@ -26,9 +26,11 @@ std::list<std::function<std::tuple<bool, std::string>()>> _fcts {
 		ds.find(laldb::makeObject {
 			{ "name", "salut" }
 		}, [&] (laldb::Datastore::Error err, laldb::DataRepresentation docs) {
-			if (docs[0]["age"] != 16) {
-				res = false;
-				message.append("Unexpected value at [0][\"key\"]");
+			for (auto &doc : docs) {
+				if (doc["age"] != 16) {
+					res = false;
+					message.append("Unexpected value at [0][\"key\"]");
+				}
 			}
 		});
 
@@ -48,6 +50,9 @@ std::list<std::function<std::tuple<bool, std::string>()>> _fcts {
 			{ "name", "paul" },
 			{ "age", 32 }
 		}, laldb::makeObject {
+			{ "name", "paul" },
+			{ "age", 32 }
+		}, laldb::makeObject {
 			{ "name", "jean" },
 			{ "age", 42 }
 		}}, [&] (laldb::Datastore::Error err, laldb::DataRepresentation doc) {
@@ -62,15 +67,32 @@ std::list<std::function<std::tuple<bool, std::string>()>> _fcts {
 		ds.find(laldb::makeObject {
 			{ "name", "paul" }
 		}, [&] (laldb::Datastore::Error err, laldb::DataRepresentation docs) {
-			if (docs[0]["age"] != 32) {
-				res = false;
-				message.append("Unexpected value at [0][\"key\"]");
+			for (auto &doc : docs) {
+				if (doc["age"] != 32) {
+					res = false;
+					message.append("Unexpected value at [0][\"key\"]");
+				}
 			}
 		});
 
 		if (res == false)
 			return std::make_tuple(res, message);
 		return std::make_tuple(true, "");
+	}, []() -> std::tuple<bool, std::string> {
+		auto arr = laldb::DataRepresentation::newArray();
+		for (auto i = 0; i < 10; ++i) {
+			arr.push(laldb::makeObject{
+				{"i", i}
+			});
+		}
+		for (auto &e : arr) {
+			double i = e["i"].value<laldb::Number>();
+			std::cout << i << std::endl;
+		}
+		auto obj = laldb::DataRepresentation::newObject();
+		obj["bonjour"] = "oui bien sur !";
+		for (auto &e : obj)
+			std::cout << e["bonjour"].value<laldb::String>() << std::endl;
 	}
 };
 

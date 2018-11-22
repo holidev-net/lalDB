@@ -41,6 +41,9 @@
 		"list": "cpp",
 		"iostream": "cpp",
 		"chrono": "cpp",
-		"ratio": "cpp"
+		"ratio": "cpp",
+		"cstdarg": "cpp",
+		"deque": "cpp",
+		"algorithm": "cpp"
 	}
 }
