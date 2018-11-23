@@ -190,7 +190,7 @@ _pos{pos}
 {
 	if (_data == nullptr)
 		_pos = -1;
-	else if (pos != 0 && (!data->isArray() || data->value<Array>().size() >= pos))
+	else if (pos != 0 && (!data->isArray() || pos <= (long)data->value<Array>().size()))
 		_pos = -1;
 }
 
@@ -213,11 +213,11 @@ DataRepresentation::iterator &DataRepresentation::iterator::operator=(iterator c
 
 DataRepresentation::iterator &DataRepresentation::iterator::operator++()
 {
-	if (!_data->isArray() || _pos >= _data->value<Array>().size() - 1)
+	if (!_data->isArray() || _pos >= (long)(_data->value<Array>().size() - 1))
 		_pos = -1;
 	else
 		++_pos;
-	return (*this);
+	return *this;
 }
 
 bool	DataRepresentation::iterator::operator==(iterator const &it) const
@@ -327,6 +327,14 @@ const void	*Buffer::get(void) const {
 
 std::size_t Buffer::size(void) const {
 	return _len;
+}
+
+void		Buffer::set(const char *buf, std::size_t len) {
+	if (_data)
+		::operator delete(_data);
+	_data = ::operator new(len);
+	_len = len;
+	std::memmove(_data, buf, len);
 }
 
 /***********************************************
@@ -445,6 +453,10 @@ std::unordered_map<std::string, DataRepresentation>	&Object::get(void) {
 	return *this;
 }
 
+std::unordered_map<std::string, DataRepresentation> const	&Object::get(void) const {
+	return *this;
+}
+
 /***********************************************
  *	Array
 ***********************************************/
@@ -479,6 +491,10 @@ std::shared_ptr<AbstractData>	Array::clone(DataRepresentation::CloneOption attr)
 }
 
 std::vector<DataRepresentation>	&Array::get(void) {
+	return *this;
+}
+
+std::vector<DataRepresentation>	const &Array::get(void) const {
 	return *this;
 }
 

@@ -43,6 +43,8 @@
 		"chrono": "cpp",
 		"ratio": "cpp",
 		"cstdarg": "cpp",
+		"codecvt": "cpp",
+		"filesystem": "cpp",
 		"deque": "cpp",
 		"algorithm": "cpp"
 	}

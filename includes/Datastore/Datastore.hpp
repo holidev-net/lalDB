@@ -12,6 +12,7 @@ private:
 	std::list<DataRepresentation>	_datas;
 public:
 	Datastore() {};
+	~Datastore() = default;
 	struct UpdateOptions {
 		bool create = true;
 		bool multi = true;
