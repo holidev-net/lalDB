@@ -8,14 +8,17 @@ execute_process(
 
 project(${NAME})
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 
 include_directories(../includes)
 include_directories(.)
 
 set(SRCS
 	main.cpp
-	Datastore/tests.cpp)
+	Datastore/tests.cpp
+	Serializer/tests.cpp)
 
 link_directories(.)
 add_executable(${NAME} ${SRCS})

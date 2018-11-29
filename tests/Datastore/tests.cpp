@@ -5,7 +5,7 @@
 #include "Datastore/Datastore.hpp"
 #include "../ATest.hpp"
 
-std::list<std::function<std::tuple<bool, std::string>()>> _fcts {
+static std::list<std::function<std::tuple<bool, std::string>()>> _fcts {
 	[] () -> std::tuple<bool, std::string> {
 		laldb::Datastore	ds;
 		bool res = true;
@@ -121,4 +121,4 @@ public:
 	}
 };
 
-DS_Tests __ptr;
+static DS_Tests __ptr;

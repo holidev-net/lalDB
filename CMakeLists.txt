@@ -12,10 +12,15 @@ set(PATCH ${CMAKE_MATCH_3})
 project(${SHARED_NAME} VERSION ${VERSION} DESCRIPTION "Lite and Lazy Database -- shared build")
 project(${STATIC_NAME} VERSION ${VERSION} DESCRIPTION "Lite and Lazy Database -- static build")
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+
+else ()
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ggdb -W -Wall -Wextra")
+endif ()
 
 include_directories(includes)
-include_directories(.)
+include_directories(srcs)
 
 set(SRCS
 	srcs/Loader/Loader.cpp
