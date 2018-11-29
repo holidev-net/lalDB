@@ -10,7 +10,7 @@ fi
 	cd $BuildDir
 	cmake ..
 	cmake --build . $@
-) && echo "OK" || echo "KO";
+) && echo "OK" || (echo "KO" && exit 1);
 
 ( $BuildDir/laldb-tests-bin ) &&
 	echo "OK"

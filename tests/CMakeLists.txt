@@ -18,7 +18,7 @@ include_directories(.)
 set(SRCS
 	main.cpp
 	Datastore/tests.cpp
-	Loader/tests.cpp)
+	Serializer/tests.cpp)
 
 link_directories(.)
 add_executable(${NAME} ${SRCS})

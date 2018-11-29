@@ -24,7 +24,6 @@ include_directories(srcs)
 
 set(SRCS
 	srcs/Loader/Loader.cpp
-	# srcs/Loader/Serializer/Serializer.cpp
 	srcs/Datastore/Datastore.cpp)
 
 set(PUBLIC_HEADERS

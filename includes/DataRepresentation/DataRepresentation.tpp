@@ -141,6 +141,10 @@ DataRepresentation	DataRepresentation::clone(CloneOption attr) const {
 	return DataRepresentation(copiedData);
 }
 
+DataRepresentation::Type DataRepresentation::getType(void) const {
+	return _data->getType();
+}
+
 bool	DataRepresentation::isObject(void) const {
 	return (_data->getType() == OBJ);
 }
@@ -277,12 +281,11 @@ std::shared_ptr<AbstractData>	Number::clone(DataRepresentation::CloneOption attr
 	return std::make_shared<Number>(_value);
 }
 
-double	&Number::get(void) {
+double	Number::get(void) const {
 	return _value;
 }
 
-inline double	Number::get(void) const
-{
+double	&Number::get(void) {
 	return _value;
 }
 
@@ -381,6 +384,11 @@ std::shared_ptr<AbstractData>	String::clone(DataRepresentation::CloneOption) con
 }
 
 const std::string	&String::get(void) const {
+	return *this;
+}
+
+std::string	&String::get(void)
+{
 	return *this;
 }
 

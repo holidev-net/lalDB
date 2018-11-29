@@ -23,7 +23,7 @@ using makeArray = std::initializer_list<ArrayEntry>;
 
 class DataRepresentation
 {
-  public:
+public:
 	enum CloneOption
 	{
 		LAZY,
@@ -40,7 +40,7 @@ class DataRepresentation
 		NUL
 	};
 
-  public:
+public:
 	inline DataRepresentation(DataRepresentation const &) = default;
 	inline DataRepresentation(Type type = NUL);
 	inline DataRepresentation(double nbr);
@@ -63,6 +63,7 @@ class DataRepresentation
 
 	inline DataRepresentation clone(CloneOption attr = CloneOption::DEEP) const;
 
+	inline DataRepresentation::Type getType(void) const;
 	inline bool isObject(void) const;
 	inline bool isArray(void) const;
 	inline bool isNumber(void) const;
@@ -146,8 +147,8 @@ class Number final : public AbstractData
 	inline virtual DataRepresentation::Type getType() const final;
 	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
-	inline double	&get(void);
 	inline double	get(void) const;
+	inline double	&get(void);
 	inline void	set(double val);
 private:
 	double	_value;
@@ -163,10 +164,10 @@ class Buffer final : public AbstractData
 	inline virtual DataRepresentation::Type getType() const final;
 	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
-	inline void *get(void);
 	inline const void *get(void) const;
-	inline std::size_t size(void) const;
+	inline void *get(void);
 	inline void set(const char *buf, std::size_t len);
+	inline std::size_t size(void) const;
 
   private:
 	void *_data;
@@ -194,9 +195,8 @@ class String final : public AbstractData, private std::string
 	inline virtual DataRepresentation::Type getType() const final;
 	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
-	inline const std::string
-		&
-		get(void) const;
+	inline const std::string &get(void) const;
+	inline std::string &get(void);
 	inline void set(std::string const &str);
 };
 
@@ -227,8 +227,8 @@ class Object final : public AbstractData, private std::unordered_map<std::string
 	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
 
-	inline std::unordered_map<std::string, DataRepresentation> &get(void);
 	inline std::unordered_map<std::string, DataRepresentation> const &get(void) const;
+	inline std::unordered_map<std::string, DataRepresentation> &get(void);
 };
 
 class Array final : public AbstractData, private std::vector<DataRepresentation>
@@ -241,8 +241,8 @@ class Array final : public AbstractData, private std::vector<DataRepresentation>
 	inline virtual DataRepresentation::Type getType(void) const final;
 	inline virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const final;
-	inline std::vector<DataRepresentation> &get(void);
 	inline std::vector<DataRepresentation> const &get(void) const;
+	inline std::vector<DataRepresentation> &get(void);
 };
 
 } // namespace laldb
