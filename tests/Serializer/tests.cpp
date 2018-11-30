@@ -48,21 +48,32 @@ static std::list<std::function<std::tuple<bool, std::string>()>> _fcts {
 	[] () -> std::tuple<bool, std::string> {
 		{
 			laldb::BaseSerializer ser("./test.db");
-			laldb::DataRepresentation obj = laldb::makeObject({
+			laldb::DataRepresentation obj = laldb::makeObject{
 				{"ok", "bonjour"},
 				{"ah", laldb::makeArray{
 					"je suis dans un tableau qui est dans un objet",
 					laldb::makeObject{{"ah", "on part sur de la recursivité !"}}
 				}},
 				{"non", 42}
-				});
+				};
+			laldb::DataRepresentation obj2 = laldb::makeObject{
+				{"nom", "un deuxieme object ?"},
+				{"nb", 42}
+			};
 			ser.serialize(obj);
+			ser.serialize(obj2);
 		}
 		{
 			laldb::BaseSerializer deser("./test.db");
-			laldb::DataRepresentation obj;
-			deser.parse(obj);
-			printObj(obj);
+			while (1) {
+				try {
+					laldb::DataRepresentation obj;
+					deser.parse(obj);
+					printObj(obj);
+				} catch (...) {
+					break;
+				}
+			}
 		}
 
 		return std::make_tuple(true, "");
