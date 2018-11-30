@@ -52,8 +52,8 @@ public:
 	bool		valid(void) const {return _valid;};
 	DataQuery	where(DataRepresentation const &query) const;
 	DataQuery	sort(DataRepresentation const &query) const;
-	DataQuery	limit(std::size_t n) const;
-	DataQuery	skip(std::size_t n) const;
+	DataQuery	limit(long	n) const;
+	DataQuery	skip(long	n) const;
 
 	void		launch(std::function<void(Datastore::Error error, DataRepresentation const updatedDocs)> callback) const;
 
@@ -62,8 +62,8 @@ private:
 	bool				_valid = true;
 	std::vector<DataRepresentation>	_queries;
 	DataRepresentation	_sort;
-	std::size_t			_skip = -1;
-	std::size_t			_limit = -1;
+	long			_skip = -1;
+	long			_limit = -1;
 };
 
 }

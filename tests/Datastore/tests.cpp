@@ -93,6 +93,7 @@ static std::list<std::function<std::tuple<bool, std::string>()>> _fcts {
 		obj["bonjour"] = "oui bien sur !";
 		for (auto &e : obj)
 			std::cout << e["bonjour"].value<laldb::String>() << std::endl;
+		return std::make_tuple(true, "");
 	}
 };
 

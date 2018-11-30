@@ -1,5 +1,6 @@
 #include "Datastore/Datastore.hpp"
 
+#include <iostream>
 namespace laldb {
 
 //TODO: Store iterator for a faster remove;
@@ -159,7 +160,7 @@ std::function<void(Error error, DataRepresentation const updatedDocs)> callback)
 	callback(false, result);
 }
 
-DataQuery::DataQuery(Datastore const &store, bool valid = true):
+DataQuery::DataQuery(Datastore const &store, bool valid):
 _store{&store},
 _valid{valid}
 {}
@@ -188,24 +189,23 @@ DataQuery	DataQuery::sort(DataRepresentation const &query) const
 	return dataQuery;
 }
 
-DataQuery	DataQuery::limit(std::size_t n) const
+DataQuery	DataQuery::limit(long n) const
 {
-	if (valid() == false)
+	if (valid() == false || n < -1)
 		return DataQuery{*_store, false};
 	DataQuery dataQuery{*this};
 	dataQuery._limit = n;
 	return dataQuery;
 }
 
-DataQuery	DataQuery::skip(std::size_t n) const
+DataQuery	DataQuery::skip(long n) const
 {
-	if (valid() == false)
+	if (valid() == false || n < -1)
 		return DataQuery{*_store, false};
 	DataQuery dataQuery{*this};
 	dataQuery._skip = n;
 	return dataQuery;
 }
-
 
 void	DataQuery::launch(std::function<void(Datastore::Error error, DataRepresentation const updatedDocs)> callback) const
 {
@@ -220,25 +220,30 @@ void	DataQuery::launch(std::function<void(Datastore::Error error, DataRepresenta
 		const auto &iMap = i.value<::laldb::Object>();
 		bool valid = true;
 
-		for (auto &query : _queries)
-		for (auto &qField: query.value<::laldb::Object>()) {
-			auto it = iMap.find(qField.first);
-			if (!(it != iMap.end() && it->second == qField.second)) {
-				valid = false;
-				break;
+		for (auto &query : _queries) {
+			for (auto &qField: query.value<::laldb::Object>()) {
+				auto it = iMap.find(qField.first);
+				if (!(it != iMap.end() && it->second == qField.second)) {
+					valid = false;
+					break;
+				}
 			}
+			if (valid == false)
+				break;
 		}
 		if (valid) {
-			if (skip > 0)
+			if (skip > 0) {
 				--skip;
-			else if (limit > 0) {
+			} else if (limit != 0) {
 				result.push(i);
-				--limit;
-			} else if (limit == 0) {
-				break;
+				if (limit > 0)
+					--limit;
 			}
+			if (limit == 0)
+				break;
 		}
 	}
+	std::cerr << "sizeof result = " << result.value<Array>().size() << std::endl;
 	callback(false, result);
 }
 
