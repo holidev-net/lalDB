@@ -58,6 +58,14 @@ DataRepresentation::DataRepresentation(const char *str):
 	_data(std::make_shared<String>(std::string(str)))
 {}
 
+DataRepresentation::DataRepresentation(std::function<bool (DataRepresentation const &)> const &func):
+	_data(std::make_shared<Function>(func))
+{}
+
+// DataRepresentation::DataRepresentation(bool (*func)(DataRepresentation const &)):
+// 	_data(std::make_shared<Function>(func))
+// {}
+
 DataRepresentation::DataRepresentation(std::initializer_list<DataRepresentation> list):
 	_data(std::make_shared<Array>(list))
 {}
@@ -72,32 +80,32 @@ DataRepresentation::DataRepresentation(std::shared_ptr<laldb::AbstractData> &dat
 
 template<typename T>
 T	&DataRepresentation::getData() {
-	return *(static_cast<T*>(_data.get()));
+	return *(reinterpret_cast<T*>(_data.get()));
 }
 
 template<typename T>
 const T	&DataRepresentation::getData() const {
-	return *(static_cast<T*>(_data.get()));
+	return *(reinterpret_cast<T*>(_data.get()));
 }
 
 template<typename T>
 auto	&DataRepresentation::value() {
-	return (static_cast<T*>(_data.get()))->get();
+	return (reinterpret_cast<T*>(_data.get()))->get();
 }
 
 template<typename T>
 const auto	&DataRepresentation::value() const {
-	return (static_cast<T*>(_data.get()))->get();
+	return (reinterpret_cast<T*>(_data.get()))->get();
 }
 
 template<typename T, typename U>
 U	DataRepresentation::value() {
-	return (static_cast<T*>(_data.get()))->get();
+	return (reinterpret_cast<T*>(_data.get()))->get();
 }
 
 template<typename T, typename U>
 U	DataRepresentation::value() const {
-	return (static_cast<T*>(_data.get()))->get();
+	return (reinterpret_cast<T*>(_data.get()))->get();
 }
 
 bool	DataRepresentation::operator==(DataRepresentation const &other) const {
@@ -116,7 +124,23 @@ DataRepresentation	&DataRepresentation::operator[](std::string const &key) {
 	return getData<Object>().get()[key];
 }
 
+DataRepresentation const	&DataRepresentation::operator[](std::string const &key) const {
+	if (_data == nullptr || !isObject()) {
+		throw std::runtime_error("laldb : Error : "
+			"Cannot use this DataRepresentation");
+	}
+	return getData<Object>().get().at(key);
+}
+
 DataRepresentation	&DataRepresentation::operator[](unsigned idx) {
+	if (_data == nullptr || !isArray()) {
+		throw std::runtime_error("laldb : Error : "
+			"Cannot use this DataRepresentation");
+	}
+	return getData<Array>().get()[idx];
+}
+
+DataRepresentation const	&DataRepresentation::operator[](unsigned idx) const {
 	if (_data == nullptr || !isArray()) {
 		throw std::runtime_error("laldb : Error : "
 			"Cannot use this DataRepresentation");
@@ -133,6 +157,15 @@ DataRepresentation	&DataRepresentation::push(DataRepresentation const &obj) {
 
 	arr.emplace_back(obj);
 	return arr.back();
+}
+
+bool DataRepresentation::operator()(DataRepresentation const &data) const
+{
+	if (_data == nullptr || !isFunction()) {
+		throw std::runtime_error("laldb : Error : "
+			"Cannot use this DataRepresentation");
+	}
+	return getData<Function>()(data);
 }
 
 DataRepresentation	DataRepresentation::clone(CloneOption attr) const {
@@ -169,6 +202,10 @@ bool	DataRepresentation::isNull(void) const {
 	return (_data->getType() == NUL);
 }
 
+bool	DataRepresentation::isFunction(void) const {
+	return (_data->getType() == FNC);
+}
+
 DataRepresentation::iterator	DataRepresentation::begin()
 {
 	if (isNull())
@@ -184,6 +221,64 @@ DataRepresentation::iterator	DataRepresentation::end()
 	return DataRepresentation::iterator{this, -1L};
 }
 
+
+static void printDataRepresentation(std::ostream &os, DataRepresentation const &obj, int decal = 0, bool member = false)
+{
+	int n = 0;
+	for (int i = 0; !member && i < decal; ++i) os << "  ";
+	switch (obj.getType()) {
+		case laldb::DataRepresentation::Type::NBR:
+			os << obj.value<laldb::Number>();
+			break;
+		case laldb::DataRepresentation::Type::STR:
+			os << '"' << obj.value<laldb::String>() << '"';
+			break;
+		case laldb::DataRepresentation::Type::BUF:
+			break;
+		case laldb::DataRepresentation::Type::ARR:
+			os << "[\n";
+			for (auto &e : obj.value<Array>()) {
+				if (n) os << ",\n";
+				for (int i = 0; i < decal + 1; ++i) os << "  ";
+				os << '[' << n << "] : ";
+				printDataRepresentation(os, e, decal + 1, true);
+				++n;
+			}
+			os << '\n';
+			for (int i = 0; i < decal; ++i) os << "  ";
+			os << ']';
+			break;
+		case laldb::DataRepresentation::Type::OBJ:
+			os << "{\n";
+			for (auto &e : obj.value<laldb::Object>()) {
+				if (n) os << ",\n";
+				for (int i = 0; i < decal + 1; ++i) os << "  ";
+				os << '"' << e.first << "\" : ";
+				printDataRepresentation(os, e.second, decal + 1, true);
+				++n;
+			}
+			os << '\n';
+			for (int i = 0; i < decal; ++i) os << "  ";
+			os << '}';
+			break;
+		case laldb::DataRepresentation::Type::BOL:
+			os << (obj.value<Bool, bool>() ? "true" : "false");
+			break;
+		case laldb::DataRepresentation::Type::NUL:
+			os << "NULL";
+			break;
+		default:
+			os << "non printable data";break;
+	}
+	if (!member)
+		os << std::endl;
+}
+
+std::ostream &operator<<(std::ostream &os, DataRepresentation const &me)
+{
+	printDataRepresentation(os, me);
+	return os;
+}
 
 /***********************************************
  *	ITERATOR
@@ -505,6 +600,38 @@ std::vector<DataRepresentation>	&Array::get(void) {
 std::vector<DataRepresentation>	const &Array::get(void) const {
 	return *this;
 }
+
+/***********************************************
+ *	Array
+***********************************************/
+
+Function::Function(Func nbr):
+_value(nbr)
+{}
+
+bool		Function::operator==(AbstractData const &other) const {
+	(void) other;
+	return false;
+}
+
+DataRepresentation::Type	Function::getType() const {
+	return DataRepresentation::FNC;
+}
+
+std::shared_ptr<AbstractData>	Function::clone(DataRepresentation::CloneOption attr) const {
+	(void) attr;
+	return std::make_shared<Function>(_value);
+}
+
+bool Function::operator()(DataRepresentation const &data) const
+{
+	return _value(data);
+}
+
+void	Function::set(Func nbr) {
+	_value = nbr;
+}
+
 
 }
 

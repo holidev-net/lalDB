@@ -30,9 +30,11 @@ static std::list<std::function<std::tuple<bool, std::string>()>> _fcts {
 		if (res == false)
 			return std::make_tuple(res, message);
 
-		auto bla = ds.find(laldb::makeObject{{ "age", 32 }});
+		auto bla = ds.find(laldb::makeObject{{ "age", laldb::Datastore::Func([](laldb::DataRepresentation const &o) {
+			return (o.value<laldb::Number>() <= 32);})
+			}});
 
-		bla.skip(1).limit(3).launch([&] (laldb::Datastore::Error err, laldb::DataRepresentation docs) {
+		bla.skip(1).limit(4).launch([&] (laldb::Datastore::Error err, laldb::DataRepresentation docs) {
 			if (err == true || docs.isArray() == false) {
 				std::cerr << "ERROR : " <<  docs.value<laldb::String>() << std::endl;
 				return;

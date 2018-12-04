@@ -46,7 +46,8 @@ inline void Loader::_writeDsSections(decltype(_datastores)::iterator cur, declty
 	auto	&name = cur->first;
 	auto	&ds = *(cur->second);
 
-	
+	(void)name;
+	(void)ds;
 
 	cur = cur++;
 	if (cur != end)

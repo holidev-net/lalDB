@@ -3,6 +3,13 @@
 #include <iostream>
 namespace laldb {
 
+bool cmpData(DataRepresentation const &data, DataRepresentation const &other) {
+	if (other.isFunction())
+		return other(data);
+	return data == other;
+}
+
+
 //TODO: Store iterator for a faster remove;
 void	Datastore::insert(
 DataRepresentation const &query,
@@ -41,7 +48,7 @@ std::function<void(Error error, long count)> callback) const {
 
 		for (auto &qField: qMap) {
 			auto it = iMap.find(qField.first);
-			if (!(it != iMap.end() && it->second == qField.second)) {
+			if (!(it != iMap.end() && cmpData(it->second, qField.second))) {
 				valid = false;
 				break;
 			}
@@ -70,7 +77,7 @@ std::function<void(Error error, DataRepresentation const docs)> callback) const 
 
 		for (auto &qField: qMap) {
 			auto it = iMap.find(qField.first);
-			if (!(it != iMap.end() && it->second == qField.second)) {
+			if (!(it != iMap.end() && cmpData(it->second, qField.second))) {
 				valid = false;
 				break;
 			}
@@ -104,7 +111,7 @@ std::function<void(Error error, DataRepresentation const doc)> callback) const {
 
 		for (auto &qField: qMap) {
 			auto it = iMap.find(qField.first);
-			if (!(it != iMap.end() && it->second == qField.second)) {
+			if (!(it != iMap.end() && cmpData(it->second, qField.second))) {
 				valid = false;
 				break;
 			}
@@ -138,7 +145,7 @@ std::function<void(Error error, DataRepresentation const updatedDocs)> callback)
 
 		for (auto &qField: qMap) {
 			auto it = iMap.find(qField.first);
-			if (!(it != iMap.end() && it->second == qField.second)) {
+			if (!(it != iMap.end() && cmpData(it->second, qField.second))) {
 				valid = false;
 				break;
 			}
@@ -223,7 +230,7 @@ void	DataQuery::launch(std::function<void(Datastore::Error error, DataRepresenta
 		for (auto &query : _queries) {
 			for (auto &qField: query.value<::laldb::Object>()) {
 				auto it = iMap.find(qField.first);
-				if (!(it != iMap.end() && it->second == qField.second)) {
+				if (!(it != iMap.end() && cmpData(it->second, qField.second))) {
 					valid = false;
 					break;
 				}
@@ -246,6 +253,5 @@ void	DataQuery::launch(std::function<void(Datastore::Error error, DataRepresenta
 	std::cerr << "sizeof result = " << result.value<Array>().size() << std::endl;
 	callback(false, result);
 }
-
 
 }
