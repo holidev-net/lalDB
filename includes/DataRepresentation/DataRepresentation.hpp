@@ -37,10 +37,16 @@ public:
 		ARR,
 		OBJ,
 		BOL,
-		NUL
+		NUL,
+		FNC
 	};
 
 public:
+	template<typename T>
+	struct patate {
+		using Type = T;
+	};
+
 	inline DataRepresentation(DataRepresentation const &) = default;
 	inline DataRepresentation(Type type = NUL);
 	inline DataRepresentation(double nbr);
@@ -50,6 +56,8 @@ public:
 	inline DataRepresentation(std::string const &str);
 	inline DataRepresentation(const char *s);
 	inline DataRepresentation(const char *s, std::size_t l);
+	inline DataRepresentation(std::function<bool (DataRepresentation const &)> const &);
+	// inline DataRepresentation(bool (*)(DataRepresentation const &));
 	inline DataRepresentation(std::initializer_list<DataRepresentation> list);
 	inline DataRepresentation(std::initializer_list<ObjEntry> list);
 
@@ -58,8 +66,11 @@ public:
 	inline bool operator!=(DataRepresentation const &other) const;
 
 	inline DataRepresentation &operator[](std::string const &key);
+	inline DataRepresentation const &operator[](std::string const &key) const;
 	inline DataRepresentation &operator[](unsigned idx);
+	inline DataRepresentation const &operator[](unsigned idx) const;
 	inline DataRepresentation &push(DataRepresentation const &obj);
+	inline bool operator()(DataRepresentation const &data) const;
 
 	inline DataRepresentation clone(CloneOption attr = CloneOption::DEEP) const;
 
@@ -70,6 +81,7 @@ public:
 	inline bool isString(void) const;
 	inline bool isBool(void) const;
 	inline bool isNull(void) const;
+	inline bool isFunction(void) const;
 
 	template <typename T>
 	inline T &getData();
@@ -121,7 +133,7 @@ public:
 		inline friend void swap(iterator &lhs, iterator &rhs);
 	private:
 		DataRepresentation	*_data;
-		long			_pos;
+		long				_pos;
 	};
 
 	inline iterator begin();
@@ -129,18 +141,16 @@ public:
 };
 inline std::ostream &operator<<(std::ostream &to, DataRepresentation const &me);
 
-class AbstractData
-{
-  public:
+class AbstractData {
+public:
 	virtual bool operator==(AbstractData const &) const = 0;
 	virtual DataRepresentation::Type getType() const = 0;
 	virtual std::shared_ptr<AbstractData>
 	clone(DataRepresentation::CloneOption attr) const = 0;
 };
 
-class Number final : public AbstractData
-{
-  public:
+class Number final : public AbstractData {
+public:
 	inline Number(double nbr);
 
 	inline virtual bool operator==(AbstractData const &) const final;
@@ -154,9 +164,8 @@ private:
 	double	_value;
 };
 
-class Buffer final : public AbstractData
-{
-  public:
+class Buffer final : public AbstractData {
+public:
 	inline Buffer();
 	inline Buffer(void const *s, std::size_t len);
 
@@ -169,14 +178,13 @@ class Buffer final : public AbstractData
 	inline void set(const char *buf, std::size_t len);
 	inline std::size_t size(void) const;
 
-  private:
+private:
 	void *_data;
 	std::size_t _len;
 };
 
-class Null final : public AbstractData
-{
-  public:
+class Null final : public AbstractData {
+public:
 	inline Null();
 
 	inline virtual bool operator==(AbstractData const &) const final;
@@ -186,9 +194,8 @@ class Null final : public AbstractData
 	inline void *get(void) const;
 };
 
-class String final : public AbstractData, private std::string
-{
-  public:
+class String final : public AbstractData, private std::string {
+public:
 	inline String(std::string const &str);
 
 	inline virtual bool operator==(AbstractData const &) const final;
@@ -200,9 +207,8 @@ class String final : public AbstractData, private std::string
 	inline void set(std::string const &str);
 };
 
-class Bool final : public AbstractData
-{
-  public:
+class Bool final : public AbstractData {
+public:
 	inline Bool(bool val);
 
 	inline virtual bool operator==(AbstractData const &) const final;
@@ -216,9 +222,8 @@ class Bool final : public AbstractData
 	bool _value;
 };
 
-class Object final : public AbstractData, private std::unordered_map<std::string, DataRepresentation>
-{
-  public:
+class Object final : public AbstractData, private std::unordered_map<std::string, DataRepresentation> {
+public:
 	inline Object();
 	inline Object(std::initializer_list<ObjEntry> list);
 
@@ -231,9 +236,8 @@ class Object final : public AbstractData, private std::unordered_map<std::string
 	inline std::unordered_map<std::string, DataRepresentation> &get(void);
 };
 
-class Array final : public AbstractData, private std::vector<DataRepresentation>
-{
-  public:
+class Array final : public AbstractData, private std::vector<DataRepresentation> {
+public:
 	inline Array();
 	inline Array(std::initializer_list<ArrayEntry> list);
 
@@ -243,6 +247,23 @@ class Array final : public AbstractData, private std::vector<DataRepresentation>
 	clone(DataRepresentation::CloneOption attr) const final;
 	inline std::vector<DataRepresentation> const &get(void) const;
 	inline std::vector<DataRepresentation> &get(void);
+};
+
+class Function final : public AbstractData {
+public:
+	using Func = std::function<bool (DataRepresentation const &)>;
+
+	inline Function(Func);
+
+	inline virtual bool operator==(AbstractData const &) const final;
+	inline virtual DataRepresentation::Type getType() const final;
+	inline virtual std::shared_ptr<AbstractData>
+	clone(DataRepresentation::CloneOption attr) const final;
+
+	inline bool operator()(DataRepresentation const &) const;
+	inline void		set(Func val);
+private:
+	Func	_value;
 };
 
 } // namespace laldb

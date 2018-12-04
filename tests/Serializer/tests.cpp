@@ -69,13 +69,12 @@ static std::list<std::function<std::tuple<bool, std::string>()>> _fcts {
 				try {
 					laldb::DataRepresentation obj;
 					deser.parse(obj);
-					printObj(obj);
+					std::cout << obj << std::endl;
 				} catch (...) {
 					break;
 				}
 			}
 		}
-
 		return std::make_tuple(true, "");
 	}
 };

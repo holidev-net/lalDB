@@ -20,6 +20,7 @@ public:
 		bool multi = true;
 	};
 	using Error = bool;
+	using Func = std::function<bool (DataRepresentation const &)>;
 
 	auto const &getAllData(void) const {return _datas;}
 
@@ -42,6 +43,7 @@ public:
 		UpdateOptions const &options,
 		std::function<void(Error error, DataRepresentation const updatedDocs)> callback);
 };
+bool cmpData(DataRepresentation const &, DataRepresentation const &);
 
 class DataQuery {
 public:
