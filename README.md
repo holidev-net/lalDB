@@ -3,9 +3,11 @@
 
 ## How to use ?
 
+ *  [Open documentation](https://gitlab.holidev.net/open-libs/laldb/wikis/home "Documentation link")
+
 ## How to compile ?
 - Linux / MacOs:
-	> run: ./compile-release.sh
+	> run: ./compile-release.sh  
 - Windows:
-	> install git bash for Windows and MSVC
-	> run: ./compile-release.sh
+	> install git bash for Windows and MSVC  
+	> run: ./compile-release.sh  
